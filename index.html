@@ -1,31 +1,237 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PLANT WO Management System</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"></link>
-    <!-- Inter font from Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Montserrat font for overall theme -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- React and ReactDOM CDNs -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <!-- Babel for JSX transformation in browser -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- XLSX library for Excel export -->
-    <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css">
-</head>
-<body class="font-montserrat">
-    <div id="root"></div>
+import React, { useState, useEffect, useCallback } from 'react';
 
-    <!-- Your React application code -->
-    <script type="text/babel" src="app.js"></script>
-</body>
-</html>
+// --- Komponen Individual ---
+
+// Tombol Aksi di Panel Kanan
+const ActionButton = ({ onClick, children, className = '' }) => (
+  <button
+    onClick={onClick}
+    className={`w-full text-left p-3 my-1 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors duration-200 ${className}`}
+  >
+    {children}
+  </button>
+);
+
+// Tombol Sidebar
+const SidebarButton = ({ onClick, children, isActive }) => (
+  <button
+    onClick={onClick}
+    className={`w-full text-left px-4 py-3 my-1 rounded-lg transition-colors duration-200 ${
+      isActive ? 'bg-blue-600 text-white' : 'hover:bg-gray-700'
+    }`}
+  >
+    {children}
+  </button>
+);
+
+// Modal
+const Modal = ({ isOpen, onClose, title, children }) => {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
+      <div className="bg-gray-800 p-6 rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-semibold">{title}</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-white text-2xl">&times;</button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+};
+
+// --- Komponen Halaman ---
+
+// Halaman: Work Orders
+const WorkOrderPage = ({ breakdownData, openModal, setGlobalMessage, handleExportExcel, adminMode, handleEditRfu, handleDeleteWo }) => {
+    const openWo = breakdownData.filter(d => d.status === 'OPEN');
+    const closeWo = breakdownData.filter(d => d.status === 'CLOSE');
+
+    return (
+        <div>
+            <h2 className="text-2xl font-bold mb-4">OPEN Breakdown</h2>
+            <div className="overflow-x-auto bg-gray-800 rounded-lg p-4 mb-6">
+                <table className="min-w-full">
+                    {/* ...thead... */}
+                    <tbody>
+                        {(openWo || []).map(wo => (
+                            <tr key={wo.woNumber} className="border-b border-gray-700">
+                                {/* ...td... */}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 className="text-2xl font-bold mb-4">CLOSE Breakdown</h2>
+            <div className="overflow-x-auto bg-gray-800 rounded-lg p-4">
+                 <table className="min-w-full">
+                    {/* ...thead... */}
+                    <tbody>
+                        {(closeWo || []).map(wo => (
+                            <tr key={wo.woNumber} className="border-b border-gray-700">
+                               {/* ...td... */}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+};
+
+
+// Halaman: Spare Part Catalog
+const SparePartCatalogPage = ({ spareParts, onAdd, onDelete }) => {
+    // State dan handler untuk form tambah spare part
+    return (
+        <div>
+            <h2 className="text-2xl font-bold mb-4">Spare Part Catalog</h2>
+            {/* Form untuk menambah spare part baru */}
+            {/* Tabel untuk menampilkan daftar spare part */}
+        </div>
+    );
+};
+
+// Halaman: Production
+const ProductionPage = ({ records, units, onAdd }) => {
+     // State dan handler untuk form tambah production record
+    return (
+        <div>
+            <h2 className="text-2xl font-bold mb-4">Production Records</h2>
+            {/* Form untuk menambah catatan produksi baru */}
+            {/* Tabel untuk menampilkan daftar catatan produksi */}
+        </div>
+    );
+};
+
+// Halaman: Reports
+const ReportsPage = ({ breakdownData, productionRecords }) => {
+    // Logika untuk kalkulasi laporan
+    return (
+        <div>
+            <h2 className="text-2xl font-bold mb-4">Reports Summary</h2>
+            {/* Tampilkan ringkasan biaya maintenance */}
+            {/* Tampilkan ringkasan produksi */}
+        </div>
+    );
+};
+
+// Halaman: Unit Management
+const UnitManagementPage = ({ units, onAdd, onDelete }) => {
+    // State dan handler untuk form tambah unit
+    return (
+        <div>
+            <h2 className="text-2xl font-bold mb-4">Unit Management</h2>
+            {/* Form untuk menambah unit baru */}
+            {/* Tabel untuk menampilkan daftar unit */}
+        </div>
+    );
+};
+
+
+// --- Komponen Utama Aplikasi ---
+
+function App() {
+    const [currentPage, setCurrentPage] = useState('work-orders');
+    const [globalMessage, setGlobalMessage] = useState({ text: '', type: 'info' });
+    
+    // Semua state lainnya (breakdownData, sparePartsCatalog, productionRecords, units, dll.)
+    const [breakdownData, setBreakdownData] = useState([]);
+    const [sparePartsCatalog, setSparePartsCatalog] = useState([]);
+    const [productionRecords, setProductionRecords] = useState([]);
+    const [units, setUnits] = useState([]);
+    const [adminMode, setAdminMode] = useState(false);
+    
+    // Semua fungsi dan handler (handleSaveWo, handleAddSparePart, handleLogin, dll.)
+
+    // Fungsi untuk merender halaman berdasarkan state currentPage
+    const renderCurrentPage = () => {
+        switch (currentPage) {
+            case 'work-orders':
+                return <WorkOrderPage breakdownData={breakdownData} /*...props lainnya...*/ />;
+            case 'spare-parts':
+                return <SparePartCatalogPage spareParts={sparePartsCatalog} /*...props lainnya...*/ />;
+            case 'production':
+                return <ProductionPage records={productionRecords} units={units} /*...props lainnya...*/ />;
+            case 'reports':
+                return <ReportsPage breakdownData={breakdownData} productionRecords={productionRecords} />;
+            case 'unit-management':
+                return <UnitManagementPage units={units} /*...props lainnya...*/ />;
+            default:
+                return <WorkOrderPage breakdownData={breakdownData} /*...props lainnya...*/ />;
+        }
+    };
+    
+    // Fungsi untuk merender tombol aksi berdasarkan halaman
+    const renderActionButtons = () => {
+        switch (currentPage) {
+            case 'work-orders':
+                return (
+                    <>
+                        <ActionButton onClick={() => openModal('formWo')}>Form WO</ActionButton>
+                        <ActionButton onClick={handleExportExcel}>Export Excel</ActionButton>
+                    </>
+                );
+            // ... case untuk halaman lain
+            default:
+                return null;
+        }
+    };
+
+    return (
+        <div className="bg-gray-900 text-white min-h-screen flex font-sans">
+            {/* Sidebar */}
+            <aside className="w-64 bg-gray-800 p-4 flex flex-col">
+                <h1 className="text-2xl font-bold mb-6">PLANT OPS</h1>
+                <nav className="flex flex-col">
+                    <SidebarButton onClick={() => setCurrentPage('work-orders')} isActive={currentPage === 'work-orders'}>Work Orders</SidebarButton>
+                    <SidebarButton onClick={() => setCurrentPage('spare-parts')} isActive={currentPage === 'spare-parts'}>Spare Parts</SidebarButton>
+                    <SidebarButton onClick={() => setCurrentPage('production')} isActive={currentPage === 'production'}>Production</SidebarButton>
+                    <SidebarButton onClick={() => setCurrentPage('reports')} isActive={currentPage === 'reports'}>Reports</SidebarButton>
+                    <SidebarButton onClick={() => setCurrentPage('unit-management')} isActive={currentPage === 'unit-management'}>Unit Management</SidebarButton>
+                </nav>
+                 <div className="mt-auto">
+                    {/* Login/Logout Button */}
+                </div>
+            </aside>
+            
+            {/* Konten Utama */}
+            <main className="flex-1 flex flex-col p-6">
+                 {/* Header Konten */}
+                <header className="flex justify-between items-center mb-6">
+                    <h2 className="text-3xl font-bold">WO Management System</h2>
+                    <div className="text-right">
+                        <div className="text-lg text-gray-400">Total Maintenance Cost</div>
+                        <div className="text-3xl font-semibold text-green-400">
+                            {/* Logika untuk menampilkan total biaya */}
+                        </div>
+                    </div>
+                </header>
+                
+                {/* Area Konten Dinamis */}
+                <div className="flex-1 flex">
+                    <div className="flex-1 pr-6">
+                        {renderCurrentPage()}
+                    </div>
+                    {/* Panel Aksi Kanan */}
+                    <div className="w-64">
+                         {renderActionButtons()}
+                    </div>
+                </div>
+
+                {/* Notifikasi Global */}
+                {globalMessage.text && (
+                     <div className={`fixed bottom-5 right-5 p-4 rounded-lg shadow-lg text-white ${globalMessage.type === 'success' ? 'bg-green-600' : 'bg-red-600'}`}>
+                        {globalMessage.text}
+                    </div>
+                )}
+            </main>
+            
+            {/* Modals */}
+            {/* <Modal ... /> */}
+        </div>
+    );
+}
+
+export default App;
